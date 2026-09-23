@@ -47,6 +47,7 @@ struct HugeIcon: View {
 
 struct PreferencesView: View {
     @ObservedObject var model: BrowserModel
+    @ObservedObject var updater: UpdaterViewModel
     @AppStorage("keepRunning") private var keepRunning = true
     @AppStorage("privateNotices") private var privateNotices = true
     @AppStorage("noticeSound") private var sound = true
@@ -58,6 +59,13 @@ struct PreferencesView: View {
                 }
                 Text("O app precisa continuar aberto e conectado para receber novos avisos. Ao encerrar com ⌘Q, eles param.")
                     .font(.caption).foregroundStyle(.secondary)
+            }
+            Section("Atualizações") {
+                Toggle(isOn: $updater.automaticallyChecksForUpdates) {
+                    Label { Text("Verificar atualizações automaticamente") } icon: { HugeIcon(name: "ArrowReloadHorizontal") }
+                }
+                Button("Verificar agora") { updater.checkForUpdates() }
+                    .disabled(!updater.canCheckForUpdates)
             }
             Section("Notificações") {
                 Label { Text(model.permissionStatus) } icon: { HugeIcon(name: "Notification03") }
@@ -75,6 +83,6 @@ struct PreferencesView: View {
                 Text("O teste verifica o macOS. Avisos reais dependem da integração do painel estar publicada.")
                     .font(.caption).foregroundStyle(.secondary)
             }
-        }.formStyle(.grouped).padding(8).frame(width: 540, height: 440)
+        }.formStyle(.grouped).padding(8).frame(width: 540, height: 520)
     }
 }

@@ -1,4 +1,5 @@
 import AppKit
+import Sparkle
 import SwiftUI
 import UserNotifications
 
@@ -9,6 +10,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private var settings: NSWindow?
     private var statusItem: NSStatusItem!
     private let splash = SplashWindow()
+    private let updaterController = SPUStandardUpdaterController(startingUpdater: true, updaterDelegate: nil, userDriverDelegate: nil)
+    lazy var updaterModel = UpdaterViewModel(updater: updaterController.updater)
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         UserDefaults.standard.register(defaults: ["keepRunning": true, "privateNotices": true, "noticeSound": true])
@@ -46,11 +49,11 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     }
     @objc func showSettings() {
         if settings == nil {
-            settings = NSWindow(contentRect: NSRect(x: 0, y: 0, width: 540, height: 440),
+            settings = NSWindow(contentRect: NSRect(x: 0, y: 0, width: 540, height: 520),
                                 styleMask: [.titled, .closable], backing: .buffered, defer: false)
             settings?.title = "Ajustes da Safefy Pay"
             settings?.isReleasedWhenClosed = false
-            settings?.contentView = NSHostingView(rootView: PreferencesView(model: model))
+            settings?.contentView = NSHostingView(rootView: PreferencesView(model: model, updater: updaterModel))
             settings?.center()
         }
         settings?.makeKeyAndOrderFront(nil)
@@ -71,6 +74,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         let appMenu = NSMenu()
         appMenu.addItem(item("Abrir Safefy Pay", #selector(showWindow), "0"))
         appMenu.addItem(item("Ajustes…", #selector(showSettings), ","))
+        let checkUpdates = NSMenuItem(title: "Verificar Atualizações…", action: #selector(SPUStandardUpdaterController.checkForUpdates(_:)), keyEquivalent: "")
+        checkUpdates.target = updaterController
+        appMenu.addItem(checkUpdates)
         appMenu.addItem(.separator())
         appMenu.addItem(withTitle: "Ocultar Safefy Pay", action: #selector(NSApplication.hide(_:)), keyEquivalent: "h")
         appMenu.addItem(withTitle: "Encerrar Safefy Pay", action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q")

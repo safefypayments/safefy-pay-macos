@@ -2,3 +2,6 @@
 dist/
 .DS_Store
 integrations/
+PLANO-MACOS.md
+releases/
+.sparkle-tools/

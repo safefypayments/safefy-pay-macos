@@ -2,7 +2,7 @@
 
 App nativo em Swift/AppKit/SwiftUI que empacota o painel [app.safefypay.com.br](https://app.safefypay.com.br/) num `WKWebView`, com notificações nativas, login com Google e menu de barra de status.
 
-Contexto de produto e decisões estão em [PLANO-MACOS.md](PLANO-MACOS.md).
+Contexto de produto e decisões (notas internas, não versionadas neste repositório público) está em `PLANO-MACOS.md` local.
 
 ## Build
 
@@ -39,6 +39,20 @@ Ao abrir o `.dmg` baixado, se aparecer bloqueado ou com ícone genérico na caix
    ```bash
    xattr -cr "/Applications/Safefy Pay.app"
    ```
+
+## Auto-update (Sparkle)
+
+O app usa [Sparkle](https://sparkle-project.org/) pra checar, baixar e instalar atualizações sozinho, com feed em `appcast.xml` (nesta raiz, servido via raw.githubusercontent.com) e arquivos hospedados como GitHub Releases deste repositório.
+
+A chave privada de assinatura EdDSA foi gerada com `generate_keys` do Sparkle e vive **só no Keychain local** de quem gerou — nunca no git. A chave pública já está em `Resources/Info.plist` (`SUPublicEDKey`).
+
+Cortar uma nova versão:
+
+```bash
+./scripts/release.sh 0.2.0
+```
+
+Isso builda, empacota o `.dmg`, assina e gera o `appcast.xml` (usa as ferramentas oficiais do Sparkle — baixe a distribuição completa, mesma versão do `Package.swift`, em https://github.com/sparkle-project/Sparkle/releases e extraia `bin/` para `.sparkle-tools/bin/`). O script imprime os dois passos manuais finais: commitar/enviar o `appcast.xml` e criar o GitHub Release com o `.dmg` anexado.
 
 ## Pendências conhecidas
 
