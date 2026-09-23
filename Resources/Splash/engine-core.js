@@ -1,3 +1,7 @@
+// Vendored from thinking-orbs@0.3.2 (MIT License, Copyright (c) 2026 Jakub Antalik)
+// https://github.com/Jakubantalik/thinking-orbs — engine subpath export, no React/DOM deps.
+// Converted from an ES module to a classic script (WKWebView blocks `fetch`/ES `import`
+// for file:// origins even with allowingReadAccessTo; classic <script src> is unaffected).
 function lerp(a, b, f) {
   return a + (b - a) * f;
 }
@@ -850,24 +854,3 @@ function resolvePreset(state, size) {
   cache.set(key, resolved);
   return resolved;
 }
-export {
-  MODE_FRAMES as M,
-  STATE_TO_MODE as S,
-  scaleRadii as a,
-  MODE_DRAWS as b,
-  angleDelta as c,
-  countDots as d,
-  finalizeFrame as e,
-  fibDir as f,
-  frac as g,
-  hashD as h,
-  radiusScale as i,
-  paint as j,
-  paintLines as k,
-  lerp as l,
-  makeProj as m,
-  paintFrame as p,
-  resolvePreset as r,
-  scaleCounts as s,
-  vnoise as v
-};

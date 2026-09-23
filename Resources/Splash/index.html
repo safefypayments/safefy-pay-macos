@@ -10,30 +10,29 @@
 </head>
 <body>
 <canvas id="orb"></canvas>
-<script type="module">
-import { MODE_DRAWS, STATE_TO_MODE, resolvePreset } from './engine.js';
+<script src="./engine-core.js"></script>
+<script>
+var params = new URLSearchParams(location.search);
+var state = STATE_TO_MODE[params.get('state')] ? params.get('state') : 'working';
+var size = 64;
+var dark = params.get('dark') !== '0';
 
-const params = new URLSearchParams(location.search);
-const state = STATE_TO_MODE[params.get('state')] ? params.get('state') : 'working';
-const size = 64;
-const dark = params.get('dark') !== '0';
-
-const canvas = document.getElementById('orb');
-const dpr = Math.min(2, window.devicePixelRatio || 1);
+var canvas = document.getElementById('orb');
+var dpr = Math.min(2, window.devicePixelRatio || 1);
 canvas.width = Math.round(size * dpr);
 canvas.height = Math.round(size * dpr);
 canvas.style.width = size + 'px';
 canvas.style.height = size + 'px';
-const ctx = canvas.getContext('2d');
+var ctx = canvas.getContext('2d');
 
-const { mode, speed, opts } = resolvePreset(state, size);
-const draw = MODE_DRAWS[mode];
+var resolved = resolvePreset(state, size);
+var draw = MODE_DRAWS[resolved.mode];
 
 function loop() {
-  const t = (performance.now() / 1000) * speed;
+  var t = (performance.now() / 1000) * resolved.speed;
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
   ctx.clearRect(0, 0, size, size);
-  draw(ctx, size, t, dark, opts);
+  draw(ctx, size, t, dark, resolved.opts);
   requestAnimationFrame(loop);
 }
 requestAnimationFrame(loop);
