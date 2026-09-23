@@ -1,0 +1,55 @@
+import SwiftUI
+import WebKit
+
+struct WebContainer: NSViewRepresentable {
+    let webView: WKWebView
+    func makeNSView(context: Context) -> WKWebView { webView }
+    func updateNSView(_ nsView: WKWebView, context: Context) {}
+}
+
+struct BrowserView: View {
+    @ObservedObject var model: BrowserModel
+    var body: some View {
+        ZStack {
+            WebContainer(webView: model.webView)
+            if let error = model.error {
+                VStack(spacing: 16) {
+                    Image(systemName: "wifi.exclamationmark").font(.largeTitle)
+                    Text("Não foi possível abrir a Safefy Pay").font(.title3.bold())
+                    Text(error).foregroundStyle(.secondary).multilineTextAlignment(.center)
+                    Button("Tentar novamente") { model.loadHome() }.buttonStyle(.borderedProminent)
+                }.padding(32).frame(maxWidth: 480).background(.regularMaterial, in: RoundedRectangle(cornerRadius: 16))
+            }
+        }
+        .alert("Safefy Pay", isPresented: Binding(get: { model.message != nil }, set: { if !$0 { model.message = nil } })) {
+            Button("OK") { model.message = nil }
+        } message: { Text(model.message ?? "") }
+    }
+}
+
+struct PreferencesView: View {
+    @ObservedObject var model: BrowserModel
+    @AppStorage("keepRunning") private var keepRunning = true
+    @AppStorage("privateNotices") private var privateNotices = true
+    @AppStorage("noticeSound") private var sound = true
+    var body: some View {
+        Form {
+            Section("Funcionamento") {
+                Toggle("Continuar ativo ao fechar a janela", isOn: $keepRunning)
+                Text("O app precisa continuar aberto e conectado para receber novos avisos. Ao encerrar com ⌘Q, eles param.")
+                    .font(.caption).foregroundStyle(.secondary)
+            }
+            Section("Notificações") {
+                Text(model.permissionStatus).foregroundStyle(.secondary)
+                Toggle("Ocultar detalhes financeiros nos avisos", isOn: $privateNotices)
+                Toggle("Reproduzir som", isOn: $sound)
+                HStack {
+                    Button("Permitir notificações") { model.requestNotices() }
+                    Button("Testar") { model.testNotice() }
+                }
+                Text("O teste verifica o macOS. Avisos reais dependem da integração do painel estar publicada.")
+                    .font(.caption).foregroundStyle(.secondary)
+            }
+        }.formStyle(.grouped).padding(8).frame(width: 490, height: 360)
+    }
+}
