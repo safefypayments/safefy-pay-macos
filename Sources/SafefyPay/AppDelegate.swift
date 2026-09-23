@@ -39,7 +39,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     }
     @objc func showSettings() {
         if settings == nil {
-            settings = NSWindow(contentRect: NSRect(x: 0, y: 0, width: 490, height: 360),
+            settings = NSWindow(contentRect: NSRect(x: 0, y: 0, width: 540, height: 440),
                                 styleMask: [.titled, .closable], backing: .buffered, defer: false)
             settings?.title = "Ajustes da Safefy Pay"
             settings?.isReleasedWhenClosed = false

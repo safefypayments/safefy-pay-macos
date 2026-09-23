@@ -27,6 +27,24 @@ struct BrowserView: View {
     }
 }
 
+private func hugeIcon(_ name: String) -> NSImage {
+    guard let url = Bundle.main.url(forResource: name, withExtension: "svg", subdirectory: "Icons"),
+          let image = NSImage(contentsOf: url) else { return NSImage() }
+    image.isTemplate = true
+    return image
+}
+
+struct HugeIcon: View {
+    let name: String
+    var size: CGFloat = 18
+    var body: some View {
+        Image(nsImage: hugeIcon(name))
+            .resizable()
+            .frame(width: size, height: size)
+            .foregroundStyle(.secondary)
+    }
+}
+
 struct PreferencesView: View {
     @ObservedObject var model: BrowserModel
     @AppStorage("keepRunning") private var keepRunning = true
@@ -35,14 +53,21 @@ struct PreferencesView: View {
     var body: some View {
         Form {
             Section("Funcionamento") {
-                Toggle("Continuar ativo ao fechar a janela", isOn: $keepRunning)
+                Toggle(isOn: $keepRunning) {
+                    Label { Text("Continuar ativo ao fechar a janela") } icon: { HugeIcon(name: "AppWindowMac") }
+                }
                 Text("O app precisa continuar aberto e conectado para receber novos avisos. Ao encerrar com ⌘Q, eles param.")
                     .font(.caption).foregroundStyle(.secondary)
             }
             Section("Notificações") {
-                Text(model.permissionStatus).foregroundStyle(.secondary)
-                Toggle("Ocultar detalhes financeiros nos avisos", isOn: $privateNotices)
-                Toggle("Reproduzir som", isOn: $sound)
+                Label { Text(model.permissionStatus) } icon: { HugeIcon(name: "Notification03") }
+                    .foregroundStyle(.secondary)
+                Toggle(isOn: $privateNotices) {
+                    Label { Text("Ocultar detalhes financeiros nos avisos") } icon: { HugeIcon(name: "EyeOff") }
+                }
+                Toggle(isOn: $sound) {
+                    Label { Text("Reproduzir som") } icon: { HugeIcon(name: "VolumeHigh") }
+                }
                 HStack {
                     Button("Permitir notificações") { model.requestNotices() }
                     Button("Testar") { model.testNotice() }
@@ -50,6 +75,6 @@ struct PreferencesView: View {
                 Text("O teste verifica o macOS. Avisos reais dependem da integração do painel estar publicada.")
                     .font(.caption).foregroundStyle(.secondary)
             }
-        }.formStyle(.grouped).padding(8).frame(width: 490, height: 360)
+        }.formStyle(.grouped).padding(8).frame(width: 540, height: 440)
     }
 }
