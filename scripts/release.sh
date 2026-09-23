@@ -19,7 +19,8 @@ plutil -replace CFBundleVersion -string "$((CURRENT_BUILD + 1))" Resources/Info.
 ./scripts/make_dmg.sh
 
 mkdir -p releases
-cp "dist/Safefy Pay.dmg" "releases/Safefy Pay $VERSION.dmg"
+DMG_NAME="Safefy-Pay-$VERSION.dmg"
+cp "dist/Safefy Pay.dmg" "releases/$DMG_NAME"
 
 "$SPARKLE_BIN/generate_appcast" releases \
   --download-url-prefix "https://github.com/safefypayments/safefy-pay-macos/releases/download/v$VERSION/"
@@ -34,7 +35,7 @@ DMG e appcast.xml gerados para v$VERSION. Passos manuais restantes:
    git commit -m "Release v$VERSION"
    git push
 
-2. gh release create v$VERSION "releases/Safefy Pay $VERSION.dmg" \\
+2. gh release create v$VERSION "releases/$DMG_NAME" \\
      --title "v$VERSION" --notes "Notas da versão aqui"
 
 O appcast.xml só deve ser commitado/enviado DEPOIS que o release existir no
