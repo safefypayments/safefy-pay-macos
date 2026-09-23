@@ -8,6 +8,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private var window: NSWindow!
     private var settings: NSWindow?
     private var statusItem: NSStatusItem!
+    private let splash = SplashWindow()
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         UserDefaults.standard.register(defaults: ["keepRunning": true, "privateNotices": true, "noticeSound": true])
@@ -21,8 +22,14 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         window.contentView = NSHostingView(rootView: BrowserView(model: model))
         window.center()
         makeMenus()
-        showWindow()
         model.start()
+
+        splash.show(state: "working")
+        Task {
+            try? await Task.sleep(nanoseconds: 3_000_000_000)
+            splash.hide()
+            showWindow()
+        }
     }
 
     func applicationShouldTerminateAfterLastWindowClosed(_ sender: NSApplication) -> Bool {
